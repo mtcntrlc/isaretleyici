@@ -1,0 +1,27 @@
+# Python'a özel dosyalar
+__pycache__/
+*.pyc
+venv/
+env/
+
+# Paketleyici/Build araçlarının çıktıları
+build/
+dist/
+*.egg-info/
+
+# Büyük veya hassas dosyalar
+# Projenin çalışması için zorunlu olmayan tüm büyük dosyaları ekle
+*.zip
+*.pdf
+*.log
+
+# Eğer küçük bir PDF'in kalması gerekiyorsa bu satırı ekle
+# !gerekli-ornek.pdf
+
+# İşletim sistemi tarafından oluşturulan dosyalar
+.DS_Store
+Thumbs.db
+
+# Editör/IDE'ye özel ayar dosyaları
+.vscode/
+.idea/
