@@ -1,4 +1,71 @@
-Pdf_processor
-İtemizer
-main_gui
-Çalışan versiyon
+# isaretleyici — Hızlı Başlangıç (Türkçe)
+
+Bu proje: "yarım kalmış işaretleyici projem". Ana bileşenler:
+- `pdf_processor.py` — PDF dosyalarını okuma / işleme mantığı
+- `itemizer.py` — öğeleri/etiketleri oluşturan modül (itemizer)
+- `main_gui.py` — grafiksel kullanıcı arayüzü (muhtemel ana uygulama)
+- `main.py` — küçük bir entrypoint (kontrol ediniz)
+- `main.spec` — PyInstaller için paketleme spec dosyası
+
+Aşağıdaki talimatlar, bu projeyi ilk kez çalıştıracak biri içindir.
+
+1. Gereksinimler (önkoşullar)
+- Python 3.8 veya üzeri (3.10+ önerilir)
+- Git (isteğe bağlı)
+- Eğer GUI kütüphaneleri kullanıldıysa (PyQt5, PySide2, tkinter vb.), uygun paketler kurulmalı. (Aşağıdaki adımda nasıl belirleyeceğiniz anlatılıyor.)
+
+2. Proje kopyasını alma
+- Eğer zaten repoda çalışıyorsanız bu adımı atlayın.
+- GitHub’dan:
+  git clone git@github.com:mtcntrlc/isaretleyici.git
+  cd isaretleyici
+
+3. Sanal ortam oluşturma ve bağımlılıkların tespiti
+- Sanal ortam oluştur:
+  python3 -m venv venv
+  source venv/bin/activate   # macOS/Linux
+  venv\Scripts\activate      # Windows (PowerShell: .\venv\Scripts\Activate.ps1)
+
+- requirements.txt yoksa:
+  pip install pipreqs
+  pipreqs --force .
+  # Oluşan requirements.txt'yi kontrol edin ve eksik paket varsa elle ekleyin.
+
+- Veya projenin varsayılan bağımlılıklarını elle kurun (örnek):
+  pip install -r requirements.txt
+
+4. Uygulamayı çalıştırma (GUI muhtemelen burada başlar)
+- Genelde arayüz olan dosya `main_gui.py` içindir:
+  python main_gui.py
+- Alternatif küçük entrypoint:
+  python main.py
+
+5. PDF Açma, İşaretleme ve Kaydetme (kullanım akışı — tahmini)
+- Uygulama GUI açıldığında:
+  - Dosya → Aç veya "Open PDF" düğmesiyle bir PDF seçin.
+  - PDF yüklendikten sonra `previewer.py`/`pdf_processor.py` PDF sayfalarını gösterir.
+  - Seçim/işaretleme araçları GUI üzerinde görünür (renk vs. için color_selector.py).
+  - İşaretlemeleri kaydetme / export seçenekleri GUI'de yer alır veya `itemizer.py` aracılığıyla işlem görür.
+  - Eğer PyInstaller ile bağımsız uygulama oluşturmak isterseniz:
+    pyinstaller main.spec
+  - Oluşan executable dist/ içinde yer alacaktır.
+
+6. Geliştirme ipuçları
+- Kodu anlamak için büyük dosyalardan başlayın:
+  - `main_gui.py` — Uygulama akışı, olay döngüsü, butonlar
+  - `pdf_processor.py` — PDF okuma/parçalama/konum bilgisi
+  - `itemizer.py` — Etiketleme / öğe çıkartma mantığı
+  - `navigator.py` — Sayfa gezintisi veya navigasyon ile ilgili kodlar
+- Hangi modüllerin gerektiğini `import` satırlarına bakarak tespit edin.
+- Hızlı test için `deneme.py` ve `controller.py` dosyalarına bakın — test/örnek kodları içeriyor olabilir.
+
+7. Sorun giderme
+- Eksik modül hatası (ModuleNotFoundError): ilgili paketi pip ile kurun.
+- GUI açılmıyor: Konsolda çıkan traceback’e bakın; eksik GUI kütüphanesi olabilir (PyQt5, tkinter vb.).
+- PyInstaller hataları: main.spec dosyasındaki path/hiddenimports kontrol edin.
+
+8. Yardım / Geliştirme
+- Projeyi AI veya ekip arkadaşlarıyla paylaşmadan önce `pipreqs` veya `pip freeze` ile requirements oluşturun.
+- Daha iyi belge için repo köküne README.md dosyası eklemeyi sürdürün (bu dosya başlangıç için uygundur).
+
+Not: Bu README temel seviyede hazırlanmıştır; projenin tam çalıştırılabilmesi için eksik bağımlılık listesinin (requirements.txt) ve GUI detaylarının netleştirilmesi gerekebilir.
