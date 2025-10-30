@@ -17,11 +17,12 @@ class Itemizer:
 
     def restore_state(self, state):
         """Sayacı, verilen durum sözlüğüne göre ayarlar."""
-        self.num_level = state['num_level']
-        self.letter_level = state['letter_level']
-        self.roman_level = state['roman_level']
-        self.current_level_index = state['current_level_index']
-        print(f"Sayaç önceki duruma geri yüklendi. Mevcut madde: {self.get_current_item_display()}")
+        if state:  # Gelen durumun None olmadığını kontrol et
+            self.num_level = state['num_level']
+            self.letter_level = state['letter_level']
+            self.roman_level = state['roman_level']
+            self.current_level_index = state['current_level_index']
+            print(f"Sayaç önceki duruma geri yüklendi. Mevcut madde: {self.get_current_item_display()}")
 
     def get_current_item_display(self):
         """Mevcut sayaca göre görünecek madde metnini oluşturur (sayacı ilerletmez)."""
@@ -39,8 +40,6 @@ class Itemizer:
         return item_text
 
     def get_current_item(self):
-        """Bu metodun ne amaçla kullanıldığına bağlı olarak yeniden değerlendirilebilir.
-           Şimdilik get_current_item_display'i çağırabilir."""
         return self.get_current_item_display()
 
     def reset_items(self):
@@ -75,16 +74,34 @@ class Itemizer:
         elif level == 'letter':
             if self.letter_level == 'z':
                 self.letter_level = 'a'
-                # Üst seviyeyi de etkileyebilir, bu mantık projenin ihtiyacına göre ayarlanabilir.
             else:
                 self.letter_level = chr(ord(self.letter_level) + 1)
         elif level == 'roman':
-            if self.roman_level == 5:
-                self.roman_level = 1
+            # --- DEĞİŞİKLİK BURADA ---
+            # Roman rakamı sayacını artık 20'ye kadar ilerletiyoruz.
+            if self.roman_level >= 20:
+                self.roman_level = 1  # 20'den sonra başa dön
             else:
                 self.roman_level += 1
+            # --- DEĞİŞİKLİK BİTTİ ---
 
     def roman_to_string(self, num):
-        """Romen rakamlarını stringe çevirir."""
-        romans = {1: 'i', 2: 'ii', 3: 'iii', 4: 'iv', 5: 'v'}
-        return romans.get(num, '')
+        """1'den 20'ye kadar olan sayıları küçük harf Roma rakamlarına çevirir."""
+        if not 1 <= num <= 20:
+            return str(num)  # Aralık dışındaysa normal sayı olarak döndür
+
+        val = [
+            10, 9, 5, 4, 1
+        ]
+        syb = [
+            "x", "ix", "v", "iv", "i"
+        ]
+        roman_num = ""
+        i = 0
+        temp_num = num
+        while temp_num > 0:
+            for _ in range(temp_num // val[i]):
+                roman_num += syb[i]
+                temp_num -= val[i]
+            i += 1
+        return roman_num
