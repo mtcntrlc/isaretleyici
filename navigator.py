@@ -25,14 +25,18 @@ class Navigator:
         if self.document_manager and self.document_manager.current_page_index < self.document_manager.get_page_count() - 2:
             self.document_manager.current_page_index += 2
             if settings.DEFAULT_NUMBERING_MODE == settings.NumberingMode.PER_PAGE:
-                self.itemizer.reset_items()
+                # --- DÜZELTME BURADA ---
+                self.itemizer.reset()  # reset_items() yerine reset()
+                # --- DÜZELTME BİTTİ ---
             self.main_window.show_pages()
 
     def previous_page(self):
         if self.document_manager and self.document_manager.current_page_index > 1:
             self.document_manager.current_page_index -= 2
             if settings.DEFAULT_NUMBERING_MODE == settings.NumberingMode.PER_PAGE:
-                self.itemizer.reset_items()
+                # --- DÜZELTME BURADA ---
+                self.itemizer.reset()  # reset_items() yerine reset()
+                # --- DÜZELTME BİTTİ ---
             self.main_window.show_pages()
 
     def show_preview(self, window_pos):

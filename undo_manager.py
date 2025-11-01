@@ -3,30 +3,60 @@ class UndoManager:
         self.document_manager = document_manager
         self.pdf_processor = pdf_processor
         self.itemizer = itemizer
-        self.command_stack = []
+        self.undo_stack = []
+        self.redo_stack = []
 
     def register_action(self, command):
-        """Yapılan bir işlemi ve geri alma bilgilerini kaydeder."""
-        self.command_stack.append(command)
-        print(f"Yeni işlem kaydedildi. Toplam işlem: {len(self.command_stack)}")
+        self.undo_stack.append(command)
+        self.redo_stack.clear()
+        print(f"Yeni işlem kaydedildi. Undo yığını: {len(self.undo_stack)}")
 
     def undo(self):
-        """Son işlemi geri alır."""
-        if not self.command_stack:
+        if not self.undo_stack:
             print("Geri alınacak işlem yok.")
             return False
 
-        last_command = self.command_stack.pop()
+        command_to_undo = self.undo_stack.pop()
+        self.redo_stack.append(command_to_undo)
 
-        page_num = last_command.get("page_num")
+        page_num = command_to_undo.get("page_num")
         page = self.document_manager.get_page(page_num)
 
         if page:
-            self.pdf_processor.restore_snapshot(page, last_command)
-            previous_itemizer_state = last_command.get("itemizer_state")
-            if previous_itemizer_state:
-                self.itemizer.restore_state(previous_itemizer_state)
-
-            print("İşlem başarıyla geri alındı.")
+            self.pdf_processor.restore_snapshot(page, command_to_undo)
+            if command_to_undo.get("type") == "ADD_ITEM":
+                itemizer_state = command_to_undo.get("itemizer_state")
+                if itemizer_state: self.itemizer.restore_state(itemizer_state)
+            print("İşlem geri alındı.")
             return True
         return False
+
+    def redo(self):
+        if not self.redo_stack:
+            print("Yeniden yapılacak işlem yok.")
+            return False
+
+        command_to_redo = self.redo_stack.pop()
+
+        page_num = command_to_redo.get("page_num")
+        page = self.document_manager.get_page(page_num)
+
+        if page:
+            # İşlemi PDF üzerinde yeniden uygula
+            self.pdf_processor.reapply_action(page, command_to_redo)
+
+            # --- DÜZELTME BURADA ---
+            # Itemizer'ı (sayacı) ileri sarmak için doğru fonksiyonu çağırıyoruz.
+            if command_to_redo.get("type") == "ADD_ITEM":
+                self.itemizer.get_next_item()  # Bu, sayacı bir sonraki adıma geçirir.
+            # --- DÜZELTME BİTTİ ---
+
+            self.undo_stack.append(command_to_redo)
+            print("İşlem yeniden yapıldı.")
+            return True
+        return False
+
+    def reset(self):
+        self.undo_stack.clear()
+        self.redo_stack.clear()
+        print("Geri alma ve yineleme geçmişi temizlendi.")
